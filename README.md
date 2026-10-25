@@ -82,7 +82,8 @@ make install_tv                             # install or update, renewing Develo
 
 The `Makefile` runs the Docker commands; `make preview`, `make stop` and `make package` cover the rest.
 
-`install-tv` reads the TV's Developer Mode session token, renews the session with LG, and packages the app with
+`install-tv` reads the TV's Developer Mode session token, checks the session with LG (renewing it when under
+7 days are left), and packages the app with
 the token and the session's end (`app/devmode.js`, in the package only). The home screen then shows the days
 left and renews on its own when few are left; OK on the countdown renews it, or opens LG's Developer Mode app
 if the TV blocks the request. The registered TV and its key persist in the `ares-config` volume.

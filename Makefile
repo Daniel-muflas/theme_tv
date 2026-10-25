@@ -1,7 +1,8 @@
 # Shortcuts for the Docker commands in README.md.
 #   make setup_tv IP=192.168.1.50 PASS=ABC123   once: register the TV and fetch its key (the passphrase is
 #                                               on the TV, in the Developer Mode app)
-#   make install_tv                             install or update the app on the TV, renewing Developer Mode
+#   make install_tv                             install or update the app on the TV (renews Developer Mode
+#                                               when under 7 days are left)
 #   make preview                                the app on http://localhost:8080
 
 TV ?= tv

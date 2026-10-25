@@ -1,6 +1,7 @@
 #!/bin/sh
-# Installs the home screen on a TV registered with ares-setup-device and opens it. On the way it renews the
-# TV's Developer Mode session and hands the app the session's token and end, for its countdown and renewal.
+# Installs the home screen on a TV registered with ares-setup-device and opens it. On the way it checks the
+# TV's Developer Mode session (renewing it when under 7 days are left) and hands the app the session's token
+# and end, for its countdown and renewal.
 # Runs in the cli image:
 #   docker compose run --rm --build cli install-tv [DEVICE]    (DEVICE defaults to "tv")
 set -eu
