@@ -76,13 +76,11 @@ Once, on the TV: install the Developer Mode app from the LG Content Store, sign 
 (webostv.developer.lge.com), turn on Dev Mode Status and Key Server, and note the IP and passphrase.
 
 ```bash
-# Once: register the TV and fetch its key (asks for the passphrase)
-docker compose run --rm cli ares-setup-device -a tv -i "host=192.168.1.50" -i "port=9922" -i "username=prisoner" -i "default=true"
-docker compose run --rm cli ares-novacom -d tv --getkey
-
-# Install or update, renewing Developer Mode on the way
-docker compose run --rm --build cli install-tv
+make setup_tv IP=192.168.1.50   # once: register the TV and fetch its key (asks for the passphrase)
+make install_tv                 # install or update, renewing Developer Mode on the way
 ```
+
+The `Makefile` runs the Docker commands; `make preview`, `make stop` and `make package` cover the rest.
 
 `install-tv` reads the TV's Developer Mode session token, renews the session with LG, and packages the app with
 the token and the session's end (`app/devmode.js`, in the package only). The home screen then shows the days
