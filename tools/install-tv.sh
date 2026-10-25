@@ -12,7 +12,9 @@ cp -r /work/app "$WORK/app"
 echo "window.APP_VERSION = $(date +%s);" > "$WORK/app/version.js"
 
 echo "Reading the Developer Mode session token from $DEVICE..."
-TOKEN=$(ares-novacom -d "$DEVICE" --run "cat /var/luna/preferences/devmode_enabled" 2>/dev/null | tr -d '[:space:]' || true)
+# Only the token: ares-novacom also prints an "[Info] Set target device" line
+TOKEN=$(ares-novacom -d "$DEVICE" --run "cat /var/luna/preferences/devmode_enabled" 2>/dev/null \
+  | grep -oE '[0-9a-fA-F]{32,}' | head -n 1 || true)
 if [ -n "$TOKEN" ] && node /usr/local/lib/devmode-session.mjs "$TOKEN" > "$WORK/devmode.js"; then
   mv "$WORK/devmode.js" "$WORK/app/devmode.js"
 else

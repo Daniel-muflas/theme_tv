@@ -9,12 +9,14 @@ CLI = docker compose run --rm cli
 
 .PHONY: setup_tv install_tv preview stop package
 
-# getkey asks for the passphrase on its input: it gets it there, so no terminal is needed
+# getkey downloads the key (its passphrase prompt needs a terminal, so it is given to the device's settings
+# instead): no terminal needed
 setup_tv:
 	@test -n "$(IP)" -a -n "$(PASS)" || { echo "Usage: make setup_tv IP=<the TV's IP> PASS=<passphrase>"; exit 1; }
 	$(CLI) ares-setup-device -a $(TV) -i "host=$(IP)" -i "port=9922" -i "username=prisoner" -i "default=true" \
 		|| $(CLI) ares-setup-device -m $(TV) -i "host=$(IP)" -i "port=9922" -i "username=prisoner" -i "default=true"
-	printf '%s\n' '$(PASS)' | docker compose run --rm -T cli ares-novacom -d $(TV) --getkey
+	docker compose run --rm -T cli ares-novacom -d $(TV) --getkey < /dev/null || true
+	$(CLI) ares-setup-device -m $(TV) -i "privatekey=$(TV)_webos" -i "passphrase=$(PASS)"
 	$(CLI) ares-device -i -d $(TV)
 
 install_tv:
