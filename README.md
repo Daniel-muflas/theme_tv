@@ -1,27 +1,38 @@
 # theme_tv
 
 A clean, ad-free home screen for LG webOS TVs: a clock, weather and crypto cards, and a grid with only the
-apps you choose, in 22 looks. Built and tested from a Mac with Docker, packaged and installed with LG's
+apps you choose, in 22 looks, over a Baroque gallery or a wood fire if you like. It updates itself from this
+repo. Built and tested from a Mac with Docker, packaged and installed with LG's
 [webOS CLI](https://webostv.developer.lge.com/develop/tools/cli-introduction) (`@webos-tools/cli`).
 
 ```
 app/                    the webOS web app (ES5 and plain CSS, so it also runs on webOS 3 / Chromium 38)
+  index.html            only starts loader.js
+  loader.js             loads the installed files, or a newer update from GitHub
+  version.js            the installed version (its build time)
   appinfo.json          app id, title, icons, permissions
-  config.js             settings: language, favorite apps, theme, cities, crypto
+  config.js             settings: language, favorite apps, theme, wallpaper, cities, crypto, updates
   i18n.js               the screen's text in Spanish and English
+  layout.js             the screen's markup
   tv.js                 Luna calls on the TV; sample apps in a desktop browser
   widgets.js            weather (Open-Meteo) and crypto (CoinGecko) cards
   header.js             Developer Mode countdown and renewal
+  wallpaper.js          Baroque gallery and fireplace
+  updater.js            checks GitHub for updates
   main.js               the screen: clock, grid, themes, navigation, launch transition
   styles.css            layout and the modern dark look
   themes.css            the other looks
+  wallpaper.css         the wallpapers
   baroque.js            100 Baroque paintings (generated, see below)
   devmode.js            Developer Mode session, filled in by install-tv
 tools/
   install-tv.sh         installs on the TV and renews Developer Mode (runs in the cli image)
   devmode-session.mjs   renews a Developer Mode session with LG
+  build_bundle.py       builds the update the TVs download
   fetch_baroque.py      writes app/baroque.js from Wikidata
   make_icons.py         draws app/icon.png and app/largeIcon.png
+.github/workflows/
+  publish-update.yml    publishes the update on GitHub Pages on every push that changes app/
 ```
 
 ## Settings
@@ -37,7 +48,11 @@ All in `app/config.js`:
 - `weather`: one card per city, by coordinates (Open-Meteo, no key).
 - `crypto`: the top `count` coins by market cap in `currency`, stablecoins and wrapped tokens left out
   (CoinGecko, no key). The last prices are kept for when the network fails.
+- `wallpaper`: `none`, `baroque` (a painting in a gilt frame, a new one every `artMinutes`) or `fireplace`.
+  Pick one from the "Wallpaper" tile. The yellow button (A in a browser) shows it alone, and so does
+  `idleMinutes` without a key; any key brings the screen back.
 - `devMode`: the Developer Mode countdown, and how many days before the end it renews on its own.
+- `update`: where the TV looks for updates, and how often.
 - `launchAnimation`: opening an app zooms its tile until it fills the screen.
 
 Themes: `dark`, `swiss`, `brutal`, `glass`, `pastel`, `immersive` (3D), `skeuo`, `metro`, `neumorph`, `clay`,
@@ -79,6 +94,28 @@ Notes:
 - `@webos-tools/cli` 3.2.6 needs Node.js 20 or newer, whatever LG's install page says; the image uses Node 20.
 - `ares-package` warns that `appinfo.json` has no `requiredACG`. LG enforces it only from webOS 26, and only
   when the field is there; it lists no group for `listLaunchPoints`, which the app needs, so it is left out.
+
+## Updates
+
+Pushing a change to `app/` on `main` is releasing it: the TVs pick it up on their own, without a reinstall.
+
+```mermaid
+flowchart LR
+    dev["git push<br/>(changes in app/)"] --> action["GitHub Actions<br/>publish-update.yml"]
+    action -->|"tools/build_bundle.py<br/>every app file in one JSON,<br/>version = build time"| pages[("GitHub Pages<br/>bundle.json")]
+    pages -->|"every 6 h<br/>(updater.js)"| tv{"TV: version newer<br/>than the running one?"}
+    tv -->|no| keep["keep running"]
+    tv -->|yes| store["store it in localStorage<br/>and restart the screen"]
+    store --> loader["loader.js starts<br/>the stored update"]
+    loader -->|"screen comes up"| ok["runs from now on"]
+    loader -->|"crashes before that"| back["back to the installed files;<br/>that version is skipped"]
+```
+
+- The installed files never change: `loader.js` decides at each start whether to run them or the stored update.
+  `index.html` and `loader.js` themselves cannot update this way; changing them needs `install-tv`.
+- `app/devmode.js`, written per TV by `install-tv`, always comes from the installed files.
+- `install-tv` stamps the install time as the version, so a TV only takes updates pushed after it was installed.
+- The workflow publishes on GitHub Pages rather than committing, so the repo keeps only its authors' commits.
 
 ## Package only
 

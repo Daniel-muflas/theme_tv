@@ -1,0 +1,280 @@
+/* Wallpapers (wallpaper.js): the Baroque gallery and the fireplace. No CSS variables: webOS 3 runs Chromium 38. */
+
+.wallpaper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wallpaper-none {
+  display: none;
+}
+
+/* Darkens the wallpaper where the clock, cards and tiles are; gone when the wallpaper is shown alone */
+.wallpaper:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.7) 100%);
+  -webkit-transition: opacity 0.6s;
+  transition: opacity 0.6s;
+}
+
+.ambient .wallpaper:after {
+  opacity: 0;
+}
+
+/* The screen fades away to leave the wallpaper alone */
+.ambient .top,
+.ambient .content,
+.ambient .widgets,
+.ambient .header-actions {
+  opacity: 0;
+}
+
+/* ---------- Baroque gallery: a deep red damask wall ---------- */
+
+.gallery {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #3a1014;
+  background-image: radial-gradient(ellipse at 50% 40%, rgba(255, 200, 150, 0.16) 0%, rgba(0, 0, 0, 0) 60%),
+    radial-gradient(circle, rgba(0, 0, 0, 0.18) 18%, transparent 19%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.04) 18%, transparent 19%);
+  background-size: 100% 100%, 48px 48px, 48px 48px;
+  background-position: 0 0, 0 0, 24px 24px;
+}
+
+.art-slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  -webkit-transition: opacity 2s;
+  transition: opacity 2s;
+}
+
+.art-slot.shown {
+  opacity: 1;
+}
+
+/* Gilt frame: a gold gradient with moulded bands (shadows), and the painting set in it */
+.gilt-frame {
+  position: absolute;
+  background-image: linear-gradient(135deg, #f6e27a 0%, #b8862b 22%, #f3d777 45%, #8a6420 65%, #e6c66e 85%, #9b7425 100%);
+  box-shadow: inset 0 0 0 4px #5a3d0c, inset 0 0 0 10px #d4af37, inset 0 0 0 14px #6b4a12, inset 0 0 0 22px #e9c96f,
+    inset 0 0 0 26px #7a5716, 0 0 0 3px #4a3008, 0 40px 90px rgba(0, 0, 0, 0.75);
+}
+
+.painting {
+  position: absolute;
+  top: 56px;
+  left: 56px;
+  right: 56px;
+  bottom: 56px;
+  background-color: #1a120c;
+  background-size: 100% 100%;
+  box-shadow: 0 0 0 4px #3b2a0a, 0 0 0 7px #c9a03f, inset 0 0 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Carved ornaments: gold rosettes at the corners and a crest on top */
+.ornament {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background-image: radial-gradient(circle at 40% 35%, #fff4c2 0%, #f3d777 18%, #b8862b 45%, #6b4a12 70%, rgba(107, 74, 18, 0) 72%);
+}
+
+.ornament-tl { left: -20px; top: -20px; }
+.ornament-tr { right: -20px; top: -20px; }
+.ornament-bl { left: -20px; bottom: -20px; }
+.ornament-br { right: -20px; bottom: -20px; }
+
+.ornament-top {
+  left: 50%;
+  top: -46px;
+  width: 200px;
+  height: 92px;
+  margin-left: -100px;
+  border-radius: 100px 100px 20px 20px;
+  background-image: radial-gradient(ellipse at 50% 70%, #fff4c2 0%, #f3d777 20%, #b8862b 50%, #6b4a12 72%, rgba(107, 74, 18, 0) 74%);
+}
+
+/* A small brass plaque under the painting */
+.plaque {
+  position: absolute;
+  left: 50%;
+  width: 640px;
+  margin-left: -320px;
+  padding: 12px 24px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-image: linear-gradient(#f0d48c, #b8913e);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 4px 10px rgba(0, 0, 0, 0.6);
+  color: #3b2a0a;
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.plaque-title {
+  font-size: 28px;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plaque-artist {
+  margin-top: 2px;
+  font-size: 22px;
+}
+
+/* ---------- Fireplace: a stone fireplace in a dark room lit by the fire ---------- */
+
+.room {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #140c08;
+  background-image: linear-gradient(#0d0806 0%, #1e120b 70%, #2a1a10 100%);
+}
+
+.room-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(ellipse at 50% 85%, rgba(255, 140, 40, 0.45) 0%, rgba(255, 90, 20, 0.15) 35%, rgba(0, 0, 0, 0) 65%);
+}
+
+.fireplace {
+  position: absolute;
+  left: 410px;
+  bottom: 40px;
+  width: 1100px;
+  height: 720px;
+  background-color: #5d554d;
+  background-image: linear-gradient(rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 66px, rgba(20, 14, 10, 0.8) 66px, rgba(20, 14, 10, 0.8) 72px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 130px, rgba(20, 14, 10, 0.8) 130px, rgba(20, 14, 10, 0.8) 136px),
+    linear-gradient(#7a7068, #4a433d);
+  background-size: 100% 72px, 136px 144px, 100% 100%;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.6), 0 0 120px rgba(0, 0, 0, 0.6);
+}
+
+.mantel {
+  position: absolute;
+  left: -70px;
+  right: -70px;
+  top: -40px;
+  height: 64px;
+  border-radius: 6px;
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0, rgba(255, 255, 255, 0.04) 3px,
+      transparent 3px, transparent 14px),
+    linear-gradient(#7a4c24, #4a2c14);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* The opening: an arch, dark, with the fire in it */
+.firebox {
+  position: absolute;
+  left: 200px;
+  right: 200px;
+  top: 150px;
+  bottom: 0;
+  overflow: hidden;
+  border-radius: 350px 350px 0 0 / 180px 180px 0 0;
+  background-image: radial-gradient(ellipse at 50% 100%, #3a1606 0%, #120604 55%, #050202 100%);
+  box-shadow: inset 0 0 0 10px #3e3833, inset 0 20px 60px rgba(0, 0, 0, 0.9);
+}
+
+.fire {
+  position: absolute;
+  -webkit-filter: blur(4px);
+  filter: blur(4px);
+  left: 60px;
+  right: 60px;
+  bottom: 60px;
+  width: 580px;
+  height: 420px;
+}
+
+.embers {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  bottom: 30px;
+  height: 50px;
+  border-radius: 50%;
+  background-image: radial-gradient(ellipse at 50% 60%, #ffcf70 0%, #ff7a1a 30%, #8a1c06 70%, rgba(40, 10, 4, 0) 100%);
+}
+
+.log {
+  position: absolute;
+  height: 54px;
+  border-radius: 27px;
+  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0, rgba(0, 0, 0, 0.18) 4px, transparent 4px,
+      transparent 22px),
+    linear-gradient(#6b4423, #3a2210 70%, #1e1008);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6), inset 0 -6px 10px rgba(255, 110, 30, 0.35);
+}
+
+/* A log's cut end: rings */
+.log:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-image: radial-gradient(circle, #c99a5c 0%, #a07040 30%, #c99a5c 45%, #8a5a30 60%, #4a2c14 80%);
+}
+
+.log-back {
+  left: 150px;
+  bottom: 70px;
+  width: 400px;
+}
+
+.log-left {
+  left: 90px;
+  bottom: 30px;
+  width: 300px;
+  -webkit-transform: rotate(-8deg);
+  transform: rotate(-8deg);
+}
+
+.log-right {
+  right: 90px;
+  bottom: 30px;
+  width: 300px;
+  -webkit-transform: rotate(8deg) scaleX(-1);
+  transform: rotate(8deg) scaleX(-1);
+}
+
+.hearth {
+  position: absolute;
+  left: -120px;
+  right: -120px;
+  bottom: -40px;
+  height: 40px;
+  background-image: linear-gradient(#6a625a, #3e3832);
+}

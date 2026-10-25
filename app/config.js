@@ -35,6 +35,15 @@ window.HOME_CONFIG = {
   // days than this are left, as the app starts (0 = never).
   devMode: {show: true, autoRenewDays: 7},
 
+  // The wallpaper: none, baroque (100 Baroque paintings in a gilt frame) or fireplace. Pick one on the TV from
+  // the "Fondo" tile; this is only the first one. artMinutes: time per painting. idleMinutes: show the
+  // wallpaper alone after this long without a key (0 = never); the yellow button (A in a browser) does it now.
+  wallpaper: {initial: 'none', artMinutes: 10, idleMinutes: 5},
+
+  // Updates: the TV checks this every few hours and switches to a newer version on its own. The repo's
+  // GitHub workflow publishes it on every push that changes app/.
+  update: {url: 'https://daniel-muflas.github.io/theme_tv/bundle.json', everyHours: 6},
+
   // Shows a last tile that opens every app on the TV
   showAllAppsTile: true,
 

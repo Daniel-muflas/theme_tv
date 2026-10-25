@@ -179,7 +179,20 @@ html, body {
   background-image: linear-gradient(90deg, currentColor 50%, transparent 50%);
 }
 
-/* The theme picker's mark on the theme in use */
+/* A small framed picture: the "wallpaper" symbol */
+.art-wallpapers i {
+  position: absolute;
+  left: 86px;
+  top: 40px;
+  width: 76px;
+  height: 60px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 6px solid currentColor;
+  background-image: linear-gradient(135deg, transparent 55%, currentColor 55%);
+}
+
+/* The pickers' mark on the theme or wallpaper in use */
 .check {
   position: absolute;
   top: 12px;

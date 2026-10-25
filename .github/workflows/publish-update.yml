@@ -1,0 +1,35 @@
+# Publishes the update the TVs download (bundle.json, tools/build_bundle.py) on GitHub Pages whenever the app
+# changes. No commits: the repo keeps only its authors' history.
+name: Publish update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'tools/build_bundle.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/build_bundle.py _site/bundle.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4

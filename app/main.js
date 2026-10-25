@@ -5,10 +5,12 @@
 (function () {
   'use strict';
 
-  var KEY = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, OK: 13, BACK: 461, BACKSPACE: 8, ESCAPE: 27, BLUE: 406, T: 84};
+  var KEY = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, OK: 13, BACK: 461, BACKSPACE: 8, ESCAPE: 27, YELLOW: 405,
+    BLUE: 406, A: 65, T: 84};
   var t = window.t;
   var ALL_APPS_TILE = {id: '__all__', title: t('all.heading'), icon: '', color: ''};
   var THEMES_TILE = {id: '__themes__', title: t('themes.heading'), icon: '', color: ''};
+  var WALLPAPERS_TILE = {id: '__wallpapers__', title: t('wallpapers.heading'), icon: '', color: ''};
 
   // Looks in themes.css, named by i18n.js's theme.<id>; swatch and ink color their tile in the theme
   // picker. layout swaps the home grid for another arrangement (also in themes.css). 'auto' stands for config.autoTheme's day and night themes.
@@ -46,11 +48,12 @@
 
   var state = {
     apps: [],
-    view: 'home', // 'home' | 'all' | 'themes'
+    view: 'home', // 'home' | 'all' | 'themes' | 'wallpapers'
     theme: 'dark', // what was picked, maybe 'auto'
     rootClass: '',
     tiles: [],
     area: 'grid', // 'grid' | 'header': where the focus is
+    ambient: false, // the wallpaper alone, the rest of the screen hidden
     headerItems: [],
     headerFocus: 0,
     focus: 0,
@@ -113,6 +116,8 @@
     var theme = shownTheme();
     var cls = 'theme-' + theme.id;
     if (theme.layout && state.view === 'home') cls += ' layout-' + theme.layout;
+    if (window.Wallpaper.active()) cls += ' has-wallpaper';
+    if (state.ambient) cls += ' ambient';
     if (cls === state.rootClass) return false;
     state.rootClass = cls;
     el.root.className = cls;
@@ -162,23 +167,31 @@
         return {id: '__theme__' + theme.id, title: t('theme.' + theme.id), icon: '', color: '', theme: theme};
       });
     }
+    if (view === 'wallpapers') {
+      return window.Wallpaper.options().map(function (option) {
+        return {id: '__wallpaper__' + option.id, title: t('wallpaper.' + option.id), icon: '', color: '',
+          wallpaper: option};
+      });
+    }
     var tiles = pickFavorites(state.apps, config.favorites);
     if (config.showAllAppsTile !== false) tiles.push(ALL_APPS_TILE);
     if (config.showThemeTile !== false) tiles.push(THEMES_TILE);
+    if (config.showWallpaperTile !== false) tiles.push(WALLPAPERS_TILE);
     return tiles;
   }
 
-  function themeArt(art, theme) {
-    // Inline !important beats the themes' own tile colors, so each swatch shows its theme
+  // A theme's or a wallpaper's tile in its picker: its colors, a sample and a check on the one in use
+  function swatchArt(art, option, inUse) {
+    // Inline !important beats the themes' own tile colors, so each swatch shows its own
     art.className += ' art-swatch';
-    art.style.setProperty('background-color', theme.swatch, 'important');
-    art.style.setProperty('background-image', theme.swatchImage || 'none', 'important');
+    art.style.setProperty('background-color', option.swatch, 'important');
+    art.style.setProperty('background-image', option.swatchImage || 'none', 'important');
     var sample = document.createElement('div');
     sample.className = 'letter';
     sample.textContent = 'Aa';
-    sample.style.setProperty('color', theme.ink, 'important');
+    sample.style.setProperty('color', option.ink, 'important');
     art.appendChild(sample);
-    if (theme.id === state.theme) {
+    if (inUse) {
       var check = document.createElement('div');
       check.className = 'check';
       check.textContent = '✓';
@@ -195,13 +208,19 @@
     art.className = 'art c' + (index % 6);
     if (app.color) art.style.backgroundColor = app.color;
     if (app.theme) {
-      themeArt(art, app.theme);
+      swatchArt(art, app.theme, app.theme.id === state.theme);
+    } else if (app.wallpaper) {
+      swatchArt(art, app.wallpaper, app.wallpaper.id === window.Wallpaper.current());
     } else if (app === ALL_APPS_TILE) {
       art.className += ' art-all';
       art.innerHTML = '<span></span><span></span><span></span><span></span>';
     } else if (app === THEMES_TILE) {
       art.className += ' art-themes';
       art.innerHTML = '<span></span>';
+    } else if (app === WALLPAPERS_TILE) {
+      // Shares the theme tile's colors in every theme, with its own symbol
+      art.className += ' art-themes art-wallpapers';
+      art.innerHTML = '<i></i>';
     } else if (app.icon) {
       var img = document.createElement('img');
       img.src = app.icon;
@@ -226,6 +245,7 @@
   function hintFor(view) {
     if (view === 'all') return t('hint.back');
     if (view === 'themes') return t('hint.themes');
+    if (view === 'wallpapers') return t('hint.wallpapers');
     return '';
   }
 
@@ -425,8 +445,17 @@
       showView('themes');
       return;
     }
+    if (app === WALLPAPERS_TILE) {
+      showView('wallpapers');
+      return;
+    }
     if (app.theme) {
       pickTheme(app.theme.id);
+      return;
+    }
+    if (app.wallpaper) {
+      window.Wallpaper.pick(app.wallpaper.id);
+      render();
       return;
     }
     if (state.launching) return;
@@ -446,9 +475,33 @@
     });
   }
 
+  // The wallpaper alone: the rest of the screen fades away until a key is pressed
+  function setAmbient(on) {
+    state.ambient = on && window.Wallpaper.active();
+    updateRootClass();
+  }
+
+  var idleTimer = null;
+
+  function stillHere() {
+    clearTimeout(idleTimer);
+    var minutes = (config.wallpaper || {}).idleMinutes;
+    if (!minutes) return;
+    idleTimer = setTimeout(function () {
+      if (!state.launching) setAmbient(true);
+    }, minutes * 60 * 1000);
+  }
+
   function onKey(event) {
     var key = event.keyCode;
+    stillHere();
     if (state.launching) {
+      event.preventDefault();
+      return;
+    }
+    // Any key brings the screen back, and does nothing else
+    if (state.ambient) {
+      setAmbient(false);
       event.preventDefault();
       return;
     }
@@ -465,6 +518,8 @@
       if (state.view !== 'home') showView('home');
     } else if (key === KEY.BLUE || key === KEY.T) {
       cycleTheme();
+    } else if (key === KEY.YELLOW || key === KEY.A) {
+      setAmbient(true);
     } else {
       return;
     }
@@ -520,6 +575,7 @@
   }
 
   function start() {
+    document.body.insertAdjacentHTML('afterbegin', window.LAYOUT);
     el.root = $('root');
     el.time = $('time');
     el.date = $('date');
@@ -572,6 +628,7 @@
       loadApps();
     });
 
+    window.Wallpaper.start({config: config});
     window.Widgets.start($('widgets'), config);
     state.headerItems = window.Header.start({config: config, toast: toast});
     state.headerItems.forEach(function (item, i) {
@@ -585,11 +642,22 @@
       });
     });
 
+    document.addEventListener('mousemove', function () {
+      stillHere();
+      if (state.ambient) setAmbient(false);
+    });
+
     window.addEventListener('resize', fitToWindow);
     fitToWindow();
     updateClock();
     setInterval(updateClock, 10000);
     loadApps();
+    stillHere();
+
+    window.Updater.start({config: config, toast: toast, isBusy: function () {
+      return state.launching;
+    }});
+    window.Updater.started();
   }
 
   document.addEventListener('DOMContentLoaded', start);

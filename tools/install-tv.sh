@@ -8,6 +8,8 @@ DEVICE="${1:-tv}"
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 cp -r /work/app "$WORK/app"
+# Its version is now: a later push to GitHub updates it, an earlier one does not
+echo "window.APP_VERSION = $(date +%s);" > "$WORK/app/version.js"
 
 echo "Reading the Developer Mode session token from $DEVICE..."
 TOKEN=$(ares-novacom -d "$DEVICE" --run "cat /var/luna/preferences/devmode_enabled" 2>/dev/null | tr -d '[:space:]' || true)

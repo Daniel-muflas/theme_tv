@@ -9,7 +9,8 @@ COPY tools/install-tv.sh /usr/local/bin/install-tv
 COPY tools/devmode-session.mjs /usr/local/lib/
 WORKDIR /work
 COPY app/ ./app/
-RUN ares-package --no-minify app -o out && mv out/*.ipk theme-tv.ipk && rm -r out
+RUN echo "window.APP_VERSION = $(date +%s);" > app/version.js \
+    && ares-package --no-minify app -o out && mv out/*.ipk theme-tv.ipk && rm -r out
 CMD ["ares-package", "--info", "theme-tv.ipk"]
 
 FROM scratch AS ipk
