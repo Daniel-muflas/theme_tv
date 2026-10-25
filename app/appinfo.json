@@ -12,5 +12,7 @@
   "resolution": "1920x1080",
   "handlesRelaunch": true,
   "disableBackHistoryAPI": true,
-  "requiredPermissions": ["applications"]
+  "requiredPermissions": [
+    "applications"
+  ]
 }
