@@ -5,8 +5,8 @@
 (function () {
   'use strict';
 
-  var KEY = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, OK: 13, BACK: 461, BACKSPACE: 8, ESCAPE: 27, YELLOW: 405,
-    BLUE: 406, A: 65, T: 84};
+  var KEY = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, OK: 13, BACK: 461, BACKSPACE: 8, ESCAPE: 27, RED: 403,
+    YELLOW: 405, BLUE: 406, A: 65, F: 70, T: 84};
   var t = window.t;
   var ALL_APPS_TILE = {id: '__all__', title: t('all.heading'), icon: '', color: ''};
   var THEMES_TILE = {id: '__themes__', title: t('themes.heading'), icon: '', color: ''};
@@ -41,6 +41,7 @@
   ];
   var TILE_PITCH = 280; // a tile's width plus its side margins, in styles.css
   var THEME_STORAGE_KEY = 'theme';
+  var FAVORITES_STORAGE_KEY = 'favorites'; // app ids, picked on the TV; replaces config.favorites
 
   var config = window.HOME_CONFIG || {};
   var columns = config.columns || 6;
@@ -160,6 +161,48 @@
     return out;
   }
 
+  // The favorites picked on the TV (red button), or else config.favorites
+  function favoriteApps() {
+    var picked = readFavorites();
+    if (!picked) return pickFavorites(state.apps, config.favorites);
+    var byId = {};
+    state.apps.forEach(function (app) {
+      byId[app.id] = app;
+    });
+    return picked.map(function (id) {
+      return byId[id];
+    }).filter(Boolean);
+  }
+
+  function readFavorites() {
+    try {
+      var ids = JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY));
+      return ids && ids.length !== undefined ? ids : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function isFavorite(app) {
+    return favoriteApps().indexOf(app) !== -1;
+  }
+
+  // Adds the app to the favorites (at the end) or takes it out
+  function toggleFavorite(app) {
+    if (!app || !app.title || app.theme || app.wallpaper || app.id.indexOf('__') === 0) return;
+    var ids = favoriteApps().map(function (favorite) {
+      return favorite.id;
+    });
+    var at = ids.indexOf(app.id);
+    if (at === -1) ids.push(app.id);
+    else ids.splice(at, 1);
+    try {
+      window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(ids));
+    } catch (e) {}
+    toast(t(at === -1 ? 'favorites.added' : 'favorites.removed', {name: app.title}));
+    render();
+  }
+
   function tilesFor(view) {
     if (view === 'all') return state.apps.slice();
     if (view === 'themes') {
@@ -173,7 +216,8 @@
           wallpaper: option};
       });
     }
-    var tiles = pickFavorites(state.apps, config.favorites);
+    var tiles = favoriteApps();
+    if (!tiles.length) tiles = state.apps.slice();
     if (config.showAllAppsTile !== false) tiles.push(ALL_APPS_TILE);
     if (config.showThemeTile !== false) tiles.push(THEMES_TILE);
     if (config.showWallpaperTile !== false) tiles.push(WALLPAPERS_TILE);
@@ -233,6 +277,14 @@
       art.appendChild(letter);
     }
 
+    // In the list of every app, a star on the favorites
+    if (state.view === 'all' && isFavorite(app)) {
+      var star = document.createElement('div');
+      star.className = 'check favorite-star';
+      star.textContent = '\u2605';
+      art.appendChild(star);
+    }
+
     var label = document.createElement('div');
     label.className = 'label';
     label.textContent = app.title;
@@ -243,7 +295,8 @@
   }
 
   function hintFor(view) {
-    if (view === 'all') return t('hint.back');
+    if (view === 'all') return t('hint.all');
+    if (view === 'home') return t(favoriteApps().length ? 'hint.home' : 'hint.homeAll');
     if (view === 'themes') return t('hint.themes');
     if (view === 'wallpapers') return t('hint.wallpapers');
     return '';
@@ -518,6 +571,8 @@
       if (state.view !== 'home') showView('home');
     } else if (key === KEY.BLUE || key === KEY.T) {
       cycleTheme();
+    } else if ((key === KEY.RED || key === KEY.F) && state.area === 'grid') {
+      toggleFavorite(state.tiles[state.focus]);
     } else if (key === KEY.YELLOW || key === KEY.A) {
       setAmbient(true);
     } else {

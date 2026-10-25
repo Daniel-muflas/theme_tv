@@ -3,9 +3,10 @@ window.HOME_CONFIG = {
   // Screen language: es, en, or auto (the TV's)
   language: 'es',
 
-  // Apps on the home screen, in this order: an app id or part of its name (any case).
-  // Empty list = every app on the TV.
-  favorites: ['netflix', 'youtube', 'prime', 'disney', 'spotify', 'hdmi 1'],
+  // Apps on the home screen, in this order: an app id or part of its name (any case), e.g. ['netflix',
+  // 'youtube', 'hdmi 1']. Empty list = every app on the TV. On the TV, the red button (F in a browser) adds
+  // the focused app to the favorites or takes it out, and from then on the TV's own list replaces this one.
+  favorites: [],
 
   // Look: auto, dark, swiss, brutal, glass, pastel, immersive, skeuo, metro, neumorph, clay, material,
   // editorial, eink, synthwave, cyberpunk, teletext, terminal, pixel, artdeco, bento or carousel.

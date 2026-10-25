@@ -17,6 +17,11 @@
       'hint.wallpapers': 'OK para aplicar · Amarillo: ver solo el fondo · Atrás para volver',
       'update.ready': 'Hay una versión nueva: reiniciando…',
       'hint.back': 'Atrás para volver',
+      'hint.home': 'Rojo: quitar de favoritas',
+      'hint.homeAll': 'Rojo: añadir a favoritas',
+      'hint.all': 'Rojo: añadir o quitar de favoritas · Atrás para volver',
+      'favorites.added': 'Añadida a favoritas: {name}',
+      'favorites.removed': 'Quitada de favoritas: {name}',
       'hint.themes': 'OK para aplicar · Atrás para volver',
       'grid.empty': 'No hay apps que mostrar. Revisa la lista de favoritas en config.js.',
 
@@ -100,6 +105,11 @@
       'hint.wallpapers': 'OK to apply · Yellow: wallpaper only · Back to return',
       'update.ready': 'A new version is here: restarting…',
       'hint.back': 'Back to return',
+      'hint.home': 'Red: remove from favorites',
+      'hint.homeAll': 'Red: add to favorites',
+      'hint.all': 'Red: add to or remove from favorites · Back to return',
+      'favorites.added': 'Added to favorites: {name}',
+      'favorites.removed': 'Removed from favorites: {name}',
       'hint.themes': 'OK to apply · Back to return',
       'grid.empty': 'No apps to show. Check the favorites list in config.js.',
 

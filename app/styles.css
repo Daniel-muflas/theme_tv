@@ -192,6 +192,11 @@ html, body {
   background-image: linear-gradient(135deg, transparent 55%, currentColor 55%);
 }
 
+/* The favorites' star in the list of every app */
+#root .favorite-star {
+  color: #ffd23f;
+}
+
 /* The pickers' mark on the theme or wallpaper in use */
 .check {
   position: absolute;
