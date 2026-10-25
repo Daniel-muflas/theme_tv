@@ -1,0 +1,434 @@
+/* Layout and the modern dark look, drawn for 1920x1080. The other looks are in themes.css.
+   No CSS variables, grid or flex gap: webOS 3 runs Chromium 38. */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0c10;
+  color: #eef0f4;
+  font-family: "LG Smart UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+#root {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #111318;
+  background-image: -webkit-radial-gradient(20% 0%, circle, #1d2230 0%, #111318 60%);
+  background-image: radial-gradient(circle at 20% 0%, #1d2230 0%, #111318 60%);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+}
+
+/* Soft colored lights behind the screen, shown by the themes that use them */
+.decor {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.b1 { left: -240px; top: -260px; width: 1000px; height: 1000px; }
+.b2 { right: -200px; top: 160px; width: 900px; height: 900px; }
+.b3 { left: 640px; bottom: -420px; width: 900px; height: 900px; }
+
+.top {
+  position: relative;
+  padding: 96px 120px 0;
+}
+
+.time {
+  font-size: 112px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.date {
+  margin-top: 16px;
+  font-size: 36px;
+  color: #9aa1ae;
+}
+
+.content {
+  position: absolute;
+  top: 380px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.section-title {
+  padding: 0 120px;
+  height: 64px;
+}
+
+.section-title h1 {
+  display: inline-block;
+  margin: 0;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.hint {
+  margin-left: 24px;
+  font-size: 26px;
+  color: #6d7482;
+}
+
+.grid-wrap {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* Room around the tiles so the focused one can grow without being clipped */
+.grid {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding: 24px 104px 80px;
+}
+
+.tile {
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  width: 248px;
+  margin: 0 16px 40px;
+  -webkit-transition: -webkit-transform 0.15s ease-out;
+  transition: transform 0.15s ease-out;
+  cursor: pointer;
+}
+
+.art {
+  position: relative;
+  width: 248px;
+  height: 148px;
+  border-radius: 16px;
+  background-color: #262a33;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px transparent;
+  -webkit-transition: box-shadow 0.15s ease-out;
+  transition: box-shadow 0.15s ease-out;
+}
+
+.art img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: 70%;
+  max-height: 70%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.letter {
+  font-size: 72px;
+  font-weight: 600;
+  line-height: 148px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Four small squares: the "all apps" symbol. Both symbols draw in the tile's text color, for the themes to set. */
+.art-all,
+.art-themes {
+  background-color: #1c1f27;
+  color: #9aa1ae;
+}
+
+.art-all span {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: currentColor;
+}
+
+.art-all span:nth-child(1) { left: 92px; top: 42px; }
+.art-all span:nth-child(2) { left: 130px; top: 42px; }
+.art-all span:nth-child(3) { left: 92px; top: 80px; }
+.art-all span:nth-child(4) { left: 130px; top: 80px; }
+
+/* A half-filled circle: the "theme" symbol */
+.art-themes span {
+  position: absolute;
+  left: 90px;
+  top: 40px;
+  width: 60px;
+  height: 60px;
+  border: 4px solid currentColor;
+  border-radius: 50%;
+  background-image: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+/* The theme picker's mark on the theme in use */
+.check {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #2ecc71;
+}
+
+.label {
+  height: 30px;
+  margin-top: 16px;
+  line-height: 30px;
+  font-size: 26px;
+  color: #9aa1ae;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile.focused {
+  -webkit-transform: scale(1.08);
+  transform: scale(1.08);
+}
+
+.tile.focused .art {
+  box-shadow: 0 0 0 4px #eef0f4, 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.tile.focused .label {
+  color: #eef0f4;
+}
+
+.empty {
+  padding: 0 16px;
+  font-size: 30px;
+  color: #9aa1ae;
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  padding: 20px 40px;
+  border-radius: 40px;
+  background: rgba(38, 42, 51, 0.95);
+  font-size: 28px;
+  opacity: 0;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+}
+
+.toast.visible {
+  opacity: 1;
+}
+
+/* ---------- Header: the Developer Mode pill and the cards (header.js, widgets.js) ---------- */
+
+/* Neutral grey panels read on both light and dark themes; text takes the theme's color.
+   The cards line up with the clock's top, the pill with the section title; main.js sets their right edge to
+   the grid's. */
+.header-actions {
+  position: absolute;
+  top: 374px;
+  right: 152px;
+  z-index: 1;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.pill {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  height: 52px;
+  margin-left: 16px;
+  padding: 0 24px;
+  border-radius: 26px;
+  background: rgba(128, 128, 128, 0.16);
+  font-size: 26px;
+  cursor: pointer;
+  -webkit-transition: box-shadow 0.15s, background-color 0.15s;
+  transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.pill-icon {
+  margin-right: 12px;
+  font-family: Menlo, "Courier New", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.pill.focused {
+  box-shadow: 0 0 0 3px currentColor;
+}
+
+.pill.warning {
+  background: #e8590c;
+  color: #fff;
+}
+
+.widgets {
+  position: absolute;
+  top: 96px;
+  right: 152px;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.card {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 256px;
+  margin-left: 24px;
+  padding: 20px 28px;
+  border-radius: 24px;
+  background: rgba(128, 128, 128, 0.14);
+}
+
+.weather-card {
+  width: 260px;
+}
+
+.crypto-card {
+  width: 480px;
+}
+
+.card-title {
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.card-status {
+  margin-top: 40px;
+  font-size: 24px;
+  opacity: 0.6;
+}
+
+.weather-now {
+  white-space: nowrap;
+}
+
+.weather-icon {
+  margin-right: 14px;
+  font-size: 48px;
+  vertical-align: 10px;
+}
+
+.weather-temp {
+  font-size: 72px;
+  font-weight: 300;
+  line-height: 1.1;
+}
+
+.weather-text {
+  font-size: 26px;
+}
+
+.weather-range {
+  margin-top: 6px;
+  font-size: 26px;
+  opacity: 0.7;
+}
+
+.crypto-row {
+  display: -webkit-flex;
+  display: flex;
+  font-size: 26px;
+  line-height: 38px;
+}
+
+.crypto-symbol {
+  width: 84px;
+  font-weight: 700;
+}
+
+.crypto-price {
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: right;
+}
+
+.crypto-change {
+  width: 120px;
+  text-align: right;
+}
+
+.crypto-change.up {
+  color: #2ecc71;
+}
+
+.crypto-change.down {
+  color: #ff5c5c;
+}
+
+/* ---------- Launch transition (zoomInto in main.js) ---------- */
+
+.top,
+.content,
+.widgets,
+.header-actions {
+  -webkit-transition: opacity 0.4s ease-in, -webkit-transform 0.52s cubic-bezier(0.55, 0, 0.25, 1);
+  transition: opacity 0.4s ease-in, transform 0.52s cubic-bezier(0.55, 0, 0.25, 1);
+}
+
+/* Everything else comes towards the viewer and fades, as the camera moves forward */
+.launching .top,
+.launching .content,
+.launching .widgets,
+.launching .header-actions {
+  opacity: 0;
+  -webkit-transform: scale(1.15);
+  transform: scale(1.15);
+}
+
+/* The copy of the opened tile's artwork, placed over the tile and then grown to cover the screen */
+#root .zoom {
+  position: absolute;
+  z-index: 50;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 0;
+  -webkit-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+  -webkit-transition: -webkit-transform 0.52s cubic-bezier(0.55, 0, 0.25, 1), border-radius 0.52s, opacity 0.3s;
+  transition: transform 0.52s cubic-bezier(0.55, 0, 0.25, 1), border-radius 0.52s, opacity 0.3s;
+}
+
+#root .zoom .letter {
+  line-height: normal;
+}
+
+#root .zoom-in {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#root .zoom-out {
+  opacity: 0;
+}

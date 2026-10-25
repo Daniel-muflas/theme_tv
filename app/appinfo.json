@@ -1,0 +1,16 @@
+{
+  "id": "io.themetv.home",
+  "version": "1.0.0",
+  "vendor": "theme_tv",
+  "type": "web",
+  "main": "index.html",
+  "title": "Inicio",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "bgColor": "#111318",
+  "iconColor": "#111318",
+  "resolution": "1920x1080",
+  "handlesRelaunch": true,
+  "disableBackHistoryAPI": true,
+  "requiredPermissions": ["applications"]
+}

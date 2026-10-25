@@ -1,0 +1,23 @@
+services:
+  preview:
+    build:
+      context: .
+      target: preview
+    ports:
+      - "8080:80"
+    volumes:
+      # Edits in app/ show up on a browser refresh, no rebuild
+      - ./app:/usr/share/nginx/html:ro
+
+  # One-off commands: docker compose run --rm --build cli <ares-command ...>
+  cli:
+    build:
+      context: .
+      target: cli
+    profiles: ["cli"]
+    volumes:
+      # Keeps the TVs registered with ares-setup-device between runs
+      - ares-config:/root/.webos
+
+volumes:
+  ares-config:
