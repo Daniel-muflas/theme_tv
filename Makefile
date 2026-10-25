@@ -1,17 +1,21 @@
 # Shortcuts for the Docker commands in README.md.
-#   make setup_tv IP=192.168.1.50   once: register the TV and fetch its key (asks for the passphrase)
-#   make install_tv                 install or update the app on the TV, renewing Developer Mode
-#   make preview                    the app on http://localhost:8080
+#   make setup_tv IP=192.168.1.50 PASS=ABC123   once: register the TV and fetch its key (the passphrase is
+#                                               on the TV, in the Developer Mode app)
+#   make install_tv                             install or update the app on the TV, renewing Developer Mode
+#   make preview                                the app on http://localhost:8080
 
 TV ?= tv
 CLI = docker compose run --rm cli
 
 .PHONY: setup_tv install_tv preview stop package
 
+# getkey asks for the passphrase on its input: it gets it there, so no terminal is needed
 setup_tv:
-	@test -n "$(IP)" || { echo "Usage: make setup_tv IP=<the TV's IP>"; exit 1; }
-	$(CLI) ares-setup-device -a $(TV) -i "host=$(IP)" -i "port=9922" -i "username=prisoner" -i "default=true"
-	$(CLI) ares-novacom -d $(TV) --getkey
+	@test -n "$(IP)" -a -n "$(PASS)" || { echo "Usage: make setup_tv IP=<the TV's IP> PASS=<passphrase>"; exit 1; }
+	$(CLI) ares-setup-device -a $(TV) -i "host=$(IP)" -i "port=9922" -i "username=prisoner" -i "default=true" \
+		|| $(CLI) ares-setup-device -m $(TV) -i "host=$(IP)" -i "port=9922" -i "username=prisoner" -i "default=true"
+	printf '%s\n' '$(PASS)' | docker compose run --rm -T cli ares-novacom -d $(TV) --getkey
+	$(CLI) ares-device -i -d $(TV)
 
 install_tv:
 	docker compose run --rm --build cli install-tv $(TV)

@@ -16,8 +16,10 @@ services:
       target: cli
     profiles: ["cli"]
     volumes:
-      # Keeps the TVs registered with ares-setup-device between runs
+      # Keep the TVs registered with ares-setup-device, and their keys from ares-novacom --getkey, between runs
       - ares-config:/root/.webos
+      - ares-keys:/root/.ssh
 
 volumes:
   ares-config:
+  ares-keys:

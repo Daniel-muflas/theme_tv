@@ -76,8 +76,8 @@ Once, on the TV: install the Developer Mode app from the LG Content Store, sign 
 (webostv.developer.lge.com), turn on Dev Mode Status and Key Server, and note the IP and passphrase.
 
 ```bash
-make setup_tv IP=192.168.1.50   # once: register the TV and fetch its key (asks for the passphrase)
-make install_tv                 # install or update, renewing Developer Mode on the way
+make setup_tv IP=192.168.1.50 PASS=ABC123   # once: register the TV and fetch its key
+make install_tv                             # install or update, renewing Developer Mode on the way
 ```
 
 The `Makefile` runs the Docker commands; `make preview`, `make stop` and `make package` cover the rest.
